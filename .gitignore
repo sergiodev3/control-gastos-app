@@ -28,6 +28,9 @@ wheels/
 *.egg
 MANIFEST
 
+# Excepciones: permitir frontend/src/lib
+!frontend/src/lib/
+
 # PyInstaller
 *.manifest
 *.spec
