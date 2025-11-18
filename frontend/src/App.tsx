@@ -4,6 +4,8 @@ import { useAuthStore } from './store/auth.store';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
+import ExpensesPage from './pages/ExpensesPage';
+import IncomesPage from './pages/IncomesPage';
 
 // Componente de ruta protegida
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -50,9 +52,25 @@ function App() {
             }
           />
 
+          <Route 
+            path="/expenses" 
+            element={
+              <ProtectedRoute>
+                <ExpensesPage />
+              </ProtectedRoute>
+            } 
+          />
+
+          <Route 
+            path="/incomes" 
+            element={
+              <ProtectedRoute>
+                <IncomesPage />
+              </ProtectedRoute>
+            } 
+          />
+
           {/* Páginas pendientes - redirigir a dashboard por ahora */}
-          <Route path="/expenses" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/incomes" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/savings" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/stats" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />

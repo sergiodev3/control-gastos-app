@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Wallet, Mail, Lock } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
@@ -17,7 +18,7 @@ export default function LoginPage() {
     try {
       await login({ email, password });
       navigate('/dashboard');
-    } catch (error) {
+    } catch {
       // Error manejado en el store
     }
   };

@@ -51,7 +51,7 @@ export default function RegisterPage() {
         password: formData.password,
       });
       navigate('/dashboard');
-    } catch (error) {
+    } catch {
       // Error manejado en el store
     }
   };
