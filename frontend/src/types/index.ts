@@ -89,12 +89,15 @@ export interface IncomeCreate {
 }
 
 // Tipos de ahorros
+export type SavingType = 'deposito' | 'retiro';
+
 export interface Saving {
   id: string;
   user_id: string;
   date: string;
   description: string;
   amount: number;
+  transaction_type: SavingType;
   goal_amount?: number;
   purpose?: string;
   notes?: string;
@@ -103,10 +106,10 @@ export interface Saving {
 }
 
 export interface SavingCreate {
-  description: string;
   amount: number;
+  transaction_type?: SavingType;
+  purpose: string;
   goal_amount?: number;
-  purpose?: string;
   notes?: string;
   date?: string;
 }

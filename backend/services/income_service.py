@@ -35,6 +35,7 @@ class IncomeService:
                 "description": income_data.description,
                 "amount": income_data.amount,
                 "source": income_data.source,
+                "is_recurring": income_data.is_recurring if income_data.is_recurring is not None else False,
                 "notes": income_data.notes,
                 "created_at": datetime.utcnow(),
                 "updated_at": datetime.utcnow()
@@ -53,6 +54,7 @@ class IncomeService:
                 description=saved_income.description,
                 amount=saved_income.amount,
                 source=saved_income.source,
+                is_recurring=saved_income.is_recurring,
                 notes=saved_income.notes,
                 created_at=saved_income.created_at,
                 updated_at=saved_income.updated_at
@@ -88,6 +90,7 @@ class IncomeService:
                     description=income.description,
                     amount=income.amount,
                     source=income.source,
+                    is_recurring=getattr(income, 'is_recurring', False),
                     notes=income.notes,
                     created_at=income.created_at,
                     updated_at=income.updated_at
@@ -129,6 +132,7 @@ class IncomeService:
                 description=income.description,
                 amount=income.amount,
                 source=income.source,
+                is_recurring=getattr(income, 'is_recurring', False),
                 notes=income.notes,
                 created_at=income.created_at,
                 updated_at=income.updated_at
@@ -173,6 +177,8 @@ class IncomeService:
                 update_fields["amount"] = update_data.amount
             if update_data.source is not None:
                 update_fields["source"] = update_data.source
+            if update_data.is_recurring is not None:
+                update_fields["is_recurring"] = update_data.is_recurring
             if update_data.notes is not None:
                 update_fields["notes"] = update_data.notes
             
@@ -193,6 +199,7 @@ class IncomeService:
                     description=updated_income.description,
                     amount=updated_income.amount,
                     source=updated_income.source,
+                    is_recurring=getattr(updated_income, 'is_recurring', False),
                     notes=updated_income.notes,
                     created_at=updated_income.created_at,
                     updated_at=updated_income.updated_at

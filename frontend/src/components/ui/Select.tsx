@@ -6,10 +6,12 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
   helperText?: string;
   options: Array<{ value: string; label: string }>;
+  showAllOption?: boolean;
+  allOptionLabel?: string;
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, helperText, options, className = '', ...props }, ref) => {
+  ({ label, error, helperText, options, showAllOption = false, allOptionLabel = 'Todos', className = '', ...props }, ref) => {
     return (
       <div className="w-full">
         {label && (
@@ -27,7 +29,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           `}
           {...props}
         >
-          <option value="">Seleccionar...</option>
+          <option value="">{showAllOption ? allOptionLabel : 'Seleccionar...'}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

@@ -6,7 +6,7 @@ from typing import Dict, Any
 from datetime import datetime, timedelta
 from odmantic import AIOEngine
 from db.database import get_database
-from models.models import User, Expense, Income, Saving
+from models.models import User, Expense, Income, Saving, SavingType
 from models.schemas import FinancialSummary
 from core.security import get_current_active_user
 import calendar
@@ -33,9 +33,15 @@ async def get_financial_summary(
         
         # Calcular totales
         total_expenses = sum(expense.amount for expense in expenses)
-        total_income = sum(income.amount for income in incomes)
-        total_savings = sum(saving.amount for saving in savings)
-        balance = total_income - total_expenses - total_savings
+        total_incomes = sum(income.amount for income in incomes)  # Cambiado a plural
+        
+        # Calcular ahorros netos: depósitos - retiros
+        total_savings = sum(
+            saving.amount if saving.transaction_type == SavingType.DEPOSITO else -saving.amount
+            for saving in savings
+        )
+        
+        balance = total_incomes - total_expenses  # Balance = Ingresos - Gastos (los ahorros no se restan)
         
         # Gastos por categoría
         expenses_by_category = {}
@@ -50,7 +56,7 @@ async def get_financial_summary(
             expenses_by_payment_type[payment_type] = expenses_by_payment_type.get(payment_type, 0) + expense.amount
         
         return FinancialSummary(
-            total_income=round(total_income, 2),
+            total_incomes=round(total_incomes, 2),  # Cambiado a plural
             total_expenses=round(total_expenses, 2),
             total_savings=round(total_savings, 2),
             balance=round(balance, 2),
@@ -113,9 +119,9 @@ async def get_monthly_report(
         
         # Calcular totales del mes
         total_expenses = sum(expense.amount for expense in expenses)
-        total_income = sum(income.amount for income in incomes)
+        total_incomes = sum(income.amount for income in incomes)  # Cambiado a plural
         total_savings = sum(saving.amount for saving in savings)
-        balance = total_income - total_expenses - total_savings
+        balance = total_incomes - total_expenses - total_savings  # Actualizado
         
         # Convertir a esquemas de respuesta
         from models.schemas import ExpenseResponse, IncomeResponse, SavingResponse
@@ -169,7 +175,7 @@ async def get_monthly_report(
         return {
             "month": calendar.month_name[month],
             "year": year,
-            "total_income": round(total_income, 2),
+            "total_incomes": round(total_incomes, 2),  # Cambiado a plural
             "total_expenses": round(total_expenses, 2),
             "total_savings": round(total_savings, 2),
             "balance": round(balance, 2),
@@ -181,7 +187,7 @@ async def get_monthly_report(
                 "incomes_count": len(incomes),
                 "savings_count": len(savings),
                 "average_expense": round(total_expenses / len(expenses), 2) if expenses else 0,
-                "average_income": round(total_income / len(incomes), 2) if incomes else 0,
+                "average_income": round(total_incomes / len(incomes), 2) if incomes else 0,  # Actualizado
                 "average_saving": round(total_savings / len(savings), 2) if savings else 0
             }
         }

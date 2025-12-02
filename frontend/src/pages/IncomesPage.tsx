@@ -5,6 +5,7 @@ import MobileLayout from '../components/MobileLayout';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import CurrencyInput from '../components/ui/CurrencyInput';
 import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
 import Modal from '../components/ui/Modal';
@@ -154,7 +155,7 @@ export default function IncomesPage() {
     <MobileLayout>
       <div className="space-y-4">
         {/* Header con total */}
-        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white">
+        <Card className="bg-linear-to-br from-green-500 to-green-600 text-white">
           <div className="flex items-center justify-between mb-2">
             <span className="text-green-100 text-sm font-medium">Total de Ingresos</span>
             <TrendingUp className="w-5 h-5 text-green-200" />
@@ -170,13 +171,13 @@ export default function IncomesPage() {
         {/* Búsqueda */}
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
             <Input
               type="text"
               placeholder="Buscar ingresos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-11"
             />
           </div>
 
@@ -288,14 +289,11 @@ export default function IncomesPage() {
             required
           />
 
-          <Input
+          <CurrencyInput
             label="Monto"
-            type="number"
-            step="0.01"
-            min="0.01"
+            value={formData.amount}
+            onChange={(value) => setFormData({ ...formData, amount: value })}
             placeholder="0.00"
-            value={formData.amount || ''}
-            onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
             required
           />
 

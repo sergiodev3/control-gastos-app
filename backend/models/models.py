@@ -19,6 +19,13 @@ class PaymentType(str, Enum):
     PAYPAL = "paypal"
     OTRO = "otro"
 
+class SavingType(str, Enum):
+    """
+    Tipos de transacción para ahorros
+    """
+    DEPOSITO = "deposito"
+    RETIRO = "retiro"
+
 class User(Model):
     """
     Modelo de usuario del sistema
@@ -66,6 +73,7 @@ class Income(Model):
     description: str = Field(min_length=1, max_length=200)
     amount: float = Field(gt=0)  # Mayor que 0
     source: Optional[str] = Field(default=None, max_length=50)
+    is_recurring: bool = Field(default=False)  # Indica si es un ingreso recurrente
     notes: Optional[str] = Field(default=None, max_length=500)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -81,12 +89,13 @@ class Income(Model):
 
 class Saving(Model):
     """
-    Modelo para registrar ahorros
-    Permite llevar control de metas y ahorros del usuario
+    Modelo para registrar ahorros y retiros
+    Permite llevar control de metas, depósitos y retiros del usuario
     """
     user_id: ObjectId = Field(...)  # Referencia al usuario
     date: datetime = Field(default_factory=datetime.utcnow)
-    amount: float = Field(gt=0)  # Mayor que 0
+    amount: float = Field(gt=0)  # Mayor que 0 (siempre positivo)
+    transaction_type: SavingType = Field(default=SavingType.DEPOSITO)  # Tipo de transacción
     purpose: str = Field(min_length=1, max_length=200)
     goal_amount: Optional[float] = Field(default=None, gt=0)
     notes: Optional[str] = Field(default=None, max_length=500)

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Wallet, Mail, Lock } from 'lucide-react';
+import { Wallet } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -24,7 +24,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo y título */}
         <div className="text-center mb-8">
@@ -47,31 +47,23 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-11 w-5 h-5 text-gray-400 pointer-events-none" />
-                <Input
-                  label="Correo electrónico"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="tu@email.com"
-                  required
-                  className="pl-10"
-                />
-              </div>
+              <Input
+                label="Correo electrónico"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                required
+              />
 
-              <div className="relative">
-                <Lock className="absolute left-3 top-11 w-5 h-5 text-gray-400 pointer-events-none" />
-                <Input
-                  label="Contraseña"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="pl-10"
-                />
-              </div>
+              <Input
+                label="Contraseña"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
             </div>
 
             <Button

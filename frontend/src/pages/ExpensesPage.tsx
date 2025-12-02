@@ -5,6 +5,7 @@ import MobileLayout from '../components/MobileLayout';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
+import CurrencyInput from '../components/ui/CurrencyInput';
 import Select from '../components/ui/Select';
 import Textarea from '../components/ui/Textarea';
 import Modal from '../components/ui/Modal';
@@ -43,6 +44,8 @@ export default function ExpensesPage() {
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [filterMonth, setFilterMonth] = useState('');
+  const [filterYear, setFilterYear] = useState('');
 
   const [formData, setFormData] = useState<ExpenseCreate>({
     description: '',
@@ -160,16 +163,51 @@ export default function ExpensesPage() {
     const matchesSearch = expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          expense.notes?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !filterCategory || expense.category === filterCategory;
-    return matchesSearch && matchesCategory;
+    
+    // Filtro por mes y año
+    let matchesDate = true;
+    if (filterYear || filterMonth) {
+      const expenseDate = new Date(expense.date);
+      const expenseYear = expenseDate.getFullYear().toString();
+      const expenseMonth = (expenseDate.getMonth() + 1).toString().padStart(2, '0');
+      
+      if (filterYear && expenseYear !== filterYear) {
+        matchesDate = false;
+      }
+      if (filterMonth && expenseMonth !== filterMonth) {
+        matchesDate = false;
+      }
+    }
+    
+    return matchesSearch && matchesCategory && matchesDate;
   });
 
   const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+  // Obtener años disponibles (últimos 5 años)
+  const currentYear = new Date().getFullYear();
+  const availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
+  const months = [
+    { value: '01', label: 'Enero' },
+    { value: '02', label: 'Febrero' },
+    { value: '03', label: 'Marzo' },
+    { value: '04', label: 'Abril' },
+    { value: '05', label: 'Mayo' },
+    { value: '06', label: 'Junio' },
+    { value: '07', label: 'Julio' },
+    { value: '08', label: 'Agosto' },
+    { value: '09', label: 'Septiembre' },
+    { value: '10', label: 'Octubre' },
+    { value: '11', label: 'Noviembre' },
+    { value: '12', label: 'Diciembre' },
+  ];
 
   return (
     <MobileLayout>
       <div className="space-y-4">
         {/* Header con total */}
-        <Card className="bg-gradient-to-br from-red-500 to-red-600 text-white">
+        <Card className="bg-linear-to-br from-red-500 to-red-600 text-white">
           <div className="flex items-center justify-between mb-2">
             <span className="text-red-100 text-sm font-medium">Total de Gastos</span>
             <TrendingDown className="w-5 h-5 text-red-200" />
@@ -185,27 +223,50 @@ export default function ExpensesPage() {
         {/* Búsqueda y filtros */}
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
             <Input
               type="text"
               placeholder="Buscar gastos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-11"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+              <Select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                options={CATEGORIES.map(cat => ({ value: cat, label: cat }))}
+                className="pl-11"
+                showAllOption
+                allOptionLabel="Todas las categorías"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" />
+              <Select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value)}
+                options={availableYears.map(year => ({ value: year.toString(), label: year.toString() }))}
+                className="pl-11"
+                showAllOption
+                allOptionLabel="Todos los años"
+              />
+            </div>
           </div>
 
           <div className="flex gap-2">
             <div className="flex-1">
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                <Select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  options={CATEGORIES.map(cat => ({ value: cat, label: cat }))}
-                  className="pl-10"
-                />
-              </div>
+              <Select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                options={months}
+                showAllOption
+                allOptionLabel="Todos los meses"
+              />
             </div>
             <Button onClick={() => handleOpenModal()}>
               <Plus className="w-5 h-5" />
@@ -308,14 +369,11 @@ export default function ExpensesPage() {
             required
           />
 
-          <Input
+          <CurrencyInput
             label="Monto"
-            type="number"
-            step="0.01"
-            min="0.01"
+            value={formData.amount}
+            onChange={(value) => setFormData({ ...formData, amount: value })}
             placeholder="0.00"
-            value={formData.amount || ''}
-            onChange={(e) => setFormData({ ...formData, amount: parseFloat(e.target.value) || 0 })}
             required
           />
 

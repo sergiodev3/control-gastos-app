@@ -372,3 +372,37 @@ backups/
 mcp/cache/
 mcp/logs/
 mcp/.mcp_cache/
+
+# ========================================
+# DEPLOYMENT FILES (IGNORAR)
+# ========================================
+
+# Documentación de deployment
+DEPLOYMENT.md
+QUICKSTART.md
+deployment.md
+quickstart.md
+
+# Archivos de configuración de deployment
+railway.json
+Procfile
+runtime.txt
+vercel.json
+
+# Scripts de deployment
+deploy.sh
+deploy.ps1
+copy-mcp-utils.ps1
+
+# Environment examples (mantener solo los locales)
+.env.example
+.env.production
+.env.staging
+
+# Archivos de Railway
+.railway/
+railway.toml
+
+# Archivos de Vercel
+.vercel/
+.vercel.json

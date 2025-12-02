@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import List
 from fastapi import HTTPException, status
 from odmantic import AIOEngine, ObjectId
-from models.models import Saving, User
+from models.models import Saving, User, SavingType
 from models.schemas import SavingCreate, SavingUpdate, SavingResponse
 import logging
 
@@ -33,6 +33,7 @@ class SavingService:
                 "user_id": user.id,
                 "date": saving_date,
                 "amount": saving_data.amount,
+                "transaction_type": saving_data.transaction_type if saving_data.transaction_type else SavingType.DEPOSITO,
                 "purpose": saving_data.purpose,
                 "goal_amount": saving_data.goal_amount,
                 "notes": saving_data.notes,
@@ -51,6 +52,7 @@ class SavingService:
                 user_id=str(saved_saving.user_id),
                 date=saved_saving.date,
                 amount=saved_saving.amount,
+                transaction_type=saved_saving.transaction_type,
                 purpose=saved_saving.purpose,
                 goal_amount=saved_saving.goal_amount,
                 notes=saved_saving.notes,
@@ -86,6 +88,7 @@ class SavingService:
                     user_id=str(saving.user_id),
                     date=saving.date,
                     amount=saving.amount,
+                    transaction_type=getattr(saving, 'transaction_type', SavingType.DEPOSITO),
                     purpose=saving.purpose,
                     goal_amount=saving.goal_amount,
                     notes=saving.notes,
@@ -127,6 +130,7 @@ class SavingService:
                 user_id=str(saving.user_id),
                 date=saving.date,
                 amount=saving.amount,
+                transaction_type=getattr(saving, 'transaction_type', SavingType.DEPOSITO),
                 purpose=saving.purpose,
                 goal_amount=saving.goal_amount,
                 notes=saving.notes,
@@ -169,6 +173,8 @@ class SavingService:
                 update_fields["date"] = update_data.date
             if update_data.amount is not None:
                 update_fields["amount"] = update_data.amount
+            if update_data.transaction_type is not None:
+                update_fields["transaction_type"] = update_data.transaction_type
             if update_data.purpose is not None:
                 update_fields["purpose"] = update_data.purpose
             if update_data.goal_amount is not None:
@@ -191,6 +197,7 @@ class SavingService:
                     user_id=str(updated_saving.user_id),
                     date=updated_saving.date,
                     amount=updated_saving.amount,
+                    transaction_type=getattr(updated_saving, 'transaction_type', SavingType.DEPOSITO),
                     purpose=updated_saving.purpose,
                     goal_amount=updated_saving.goal_amount,
                     notes=updated_saving.notes,

@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
-import { TrendingDown, TrendingUp, PiggyBank, Wallet } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { TrendingDown, TrendingUp, PiggyBank, Wallet, RefreshCw } from 'lucide-react';
 import MobileLayout from '../components/MobileLayout';
 import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
 import { statsService } from '../services/stats.service';
 import type { Summary } from '../types';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,10 +19,13 @@ export default function DashboardPage() {
 
   const loadSummary = async () => {
     try {
+      setIsLoading(true);
       const data = await statsService.getSummary();
+      console.log('Summary data:', data); // Debug
       setSummary(data);
     } catch (error) {
       console.error('Error loading summary:', error);
+      toast.error('Error al cargar el resumen');
     } finally {
       setIsLoading(false);
     }
@@ -35,15 +42,15 @@ export default function DashboardPage() {
     <MobileLayout>
       <div className="space-y-6">
         {/* Balance principal */}
-        <Card className="bg-gradient-to-br from-primary-600 to-primary-700 text-white">
+        <Card className="bg-linear-to-br from-blue-50 to-blue-100">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-primary-100 text-sm font-medium">Balance Total</span>
-            <Wallet className="w-5 h-5 text-primary-200" />
+            <span className="text-blue-700 text-sm font-medium">Balance Total</span>
+            <Wallet className="w-5 h-5 text-blue-600" />
           </div>
-          <h2 className="text-3xl font-bold mb-1">
+          <h2 className="text-3xl font-bold mb-1 text-gray-900">
             {isLoading ? '...' : formatCurrency(summary?.balance || 0)}
           </h2>
-          <p className="text-primary-100 text-sm">
+          <p className="text-blue-700 text-sm">
             {summary && summary.balance >= 0 ? 'Tienes un balance positivo' : 'Balance negativo'}
           </p>
         </Card>
@@ -89,17 +96,36 @@ export default function DashboardPage() {
 
         {/* Acciones rápidas */}
         <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-gray-900">Acciones Rápidas</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">Acciones Rápidas</h3>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={loadSummary}
+              isLoading={isLoading}
+            >
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          </div>
           <div className="grid grid-cols-3 gap-3">
-            <button className="btn btn-primary flex flex-col items-center py-4">
+            <button 
+              onClick={() => navigate('/expenses')} 
+              className="btn btn-primary flex flex-col items-center py-4"
+            >
               <TrendingDown className="w-6 h-6 mb-1" />
               <span className="text-xs">Gasto</span>
             </button>
-            <button className="btn bg-green-600 text-white hover:bg-green-700 flex flex-col items-center py-4">
+            <button 
+              onClick={() => navigate('/incomes')} 
+              className="btn bg-green-600 text-white hover:bg-green-700 flex flex-col items-center py-4"
+            >
               <TrendingUp className="w-6 h-6 mb-1" />
               <span className="text-xs">Ingreso</span>
             </button>
-            <button className="btn bg-blue-600 text-white hover:bg-blue-700 flex flex-col items-center py-4">
+            <button 
+              onClick={() => navigate('/savings')} 
+              className="btn bg-blue-600 text-white hover:bg-blue-700 flex flex-col items-center py-4"
+            >
               <PiggyBank className="w-6 h-6 mb-1" />
               <span className="text-xs">Ahorro</span>
             </button>

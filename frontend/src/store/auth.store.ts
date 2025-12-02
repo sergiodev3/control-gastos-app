@@ -45,7 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({ isLoading: false });
       const message = error.response?.data?.detail || 'Error al iniciar sesión';
-      toast.error(message);
+      toast.error(message, { duration: 8000 });
       throw error;
     }
   },
@@ -65,7 +65,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({ isLoading: false });
       const message = error.response?.data?.detail || 'Error al crear cuenta';
-      toast.error(message);
+      toast.error(message, { duration: 8000 });
       throw error;
     }
   },
