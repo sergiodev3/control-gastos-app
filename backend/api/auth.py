@@ -6,7 +6,7 @@ from fastapi.security import HTTPBearer
 from odmantic import AIOEngine
 from db.database import get_database
 from services.user_service import UserService
-from models.schemas import UserCreate, UserLogin, UserResponse, Token, UserUpdate
+from models.schemas import UserCreate, UserLogin, UserResponse, Token, UserUpdate, PasswordChange
 from core.security import get_current_active_user
 from models.models import User
 
@@ -86,3 +86,24 @@ async def update_user_profile(
     """
     user_service = UserService(db)
     return await user_service.update_user_profile(current_user, update_data)
+
+@router.post("/change-password")
+async def change_password(
+    password_data: PasswordChange,
+    current_user: User = Depends(get_current_active_user),
+    db: AIOEngine = Depends(get_database)
+):
+    """
+    Cambiar contraseña del usuario actual
+    
+    - **current_password**: Contraseña actual del usuario (requerida)
+    - **new_password**: Nueva contraseña (mínimo 8 caracteres, debe contener letras y números)
+    
+    Requiere autenticación Bearer token
+    """
+    user_service = UserService(db)
+    return await user_service.change_password(
+        current_user,
+        password_data.current_password,
+        password_data.new_password
+    )

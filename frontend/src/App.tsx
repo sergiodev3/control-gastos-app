@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import ExpensesPage from './pages/ExpensesPage';
 import IncomesPage from './pages/IncomesPage';
 import SavingsPage from './pages/SavingsPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Componente de ruta protegida
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -82,7 +83,7 @@ function App() {
 
           {/* Páginas pendientes - redirigir a dashboard por ahora */}
           <Route path="/stats" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
           {/* Redirecciones */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

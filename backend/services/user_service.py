@@ -202,3 +202,40 @@ class UserService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Error interno del servidor"
             )
+    
+    async def change_password(self, user: User, current_password: str, new_password: str) -> dict:
+        """
+        Cambiar contraseña del usuario
+        """
+        try:
+            # Verificar que la contraseña actual sea correcta
+            if not security_utils.verify_password(current_password, user.hashed_password):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="La contraseña actual es incorrecta"
+                )
+            
+            # Verificar que la nueva contraseña sea diferente
+            if security_utils.verify_password(new_password, user.hashed_password):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="La nueva contraseña debe ser diferente a la actual"
+                )
+            
+            # Actualizar contraseña
+            user.hashed_password = security_utils.get_password_hash(new_password)
+            user.updated_at = datetime.utcnow()
+            
+            await self.db.save(user)
+            logger.info(f"Contraseña actualizada exitosamente para: {user.email}")
+            
+            return {"message": "Contraseña actualizada exitosamente"}
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Error cambiando contraseña: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Error interno del servidor"
+            )

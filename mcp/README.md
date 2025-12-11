@@ -78,7 +78,7 @@ API_TOKEN=tu_token_jwt_aqui
 4. Ve a la pestaña "Application" → "Local Storage"
 5. Busca la clave `token` y copia su valor
 
-### 4. Verificar Instalación
+### 4. Verificar Instalación e inicializacion del servidor.
 
 ```powershell
 cd src

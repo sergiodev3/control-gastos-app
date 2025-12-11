@@ -20,6 +20,11 @@ export interface RegisterData {
   password: string;
 }
 
+export interface PasswordChange {
+  current_password: string;
+  new_password: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   token_type: string;

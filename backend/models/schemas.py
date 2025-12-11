@@ -47,6 +47,20 @@ class UserUpdate(BaseModel):
     username: Optional[str] = Field(None, min_length=3, max_length=50)
     full_name: Optional[str] = Field(None, min_length=1, max_length=100)
 
+class PasswordChange(BaseModel):
+    """Esquema para cambiar contraseña"""
+    current_password: str = Field(min_length=1)
+    new_password: str = Field(min_length=8, max_length=100)
+    
+    @validator('new_password')
+    def validate_password(cls, v):
+        """Validar que la contraseña tenga al menos una letra y un número"""
+        if not any(c.isalpha() for c in v):
+            raise ValueError('La contraseña debe contener al menos una letra')
+        if not any(c.isdigit() for c in v):
+            raise ValueError('La contraseña debe contener al menos un número')
+        return v
+
 # === ESQUEMAS DE AUTENTICACIÓN ===
 
 class Token(BaseModel):
@@ -70,6 +84,23 @@ class ExpenseCreate(BaseModel):
     payment_type: PaymentType
     category: Optional[str] = Field(None, max_length=50)
     notes: Optional[str] = Field(None, max_length=500)
+    
+    @validator('date', pre=True)
+    def parse_date(cls, v):
+        """Convertir string ISO a datetime si es necesario"""
+        if v is None:
+            return None
+        if isinstance(v, str):
+            from dateutil import parser
+            dt = parser.isoparse(v)
+            # Convertir a naive UTC (ODMantic requiere datetimes naive)
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(None).replace(tzinfo=None)
+            return dt
+        # Si ya es datetime con timezone, convertir a naive
+        if hasattr(v, 'tzinfo') and v.tzinfo is not None:
+            return v.astimezone(None).replace(tzinfo=None)
+        return v
     
     @validator('amount')
     def validate_amount(cls, v):
@@ -119,6 +150,23 @@ class IncomeCreate(BaseModel):
     is_recurring: Optional[bool] = Field(default=False)
     notes: Optional[str] = Field(None, max_length=500)
     
+    @validator('date', pre=True)
+    def parse_date(cls, v):
+        """Convertir string ISO a datetime si es necesario"""
+        if v is None:
+            return None
+        if isinstance(v, str):
+            from dateutil import parser
+            dt = parser.isoparse(v)
+            # Convertir a naive UTC (ODMantic requiere datetimes naive)
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(None).replace(tzinfo=None)
+            return dt
+        # Si ya es datetime con timezone, convertir a naive
+        if hasattr(v, 'tzinfo') and v.tzinfo is not None:
+            return v.astimezone(None).replace(tzinfo=None)
+        return v
+    
     @validator('amount')
     def validate_amount(cls, v):
         if round(v, 2) != v:
@@ -166,6 +214,23 @@ class SavingCreate(BaseModel):
     purpose: str = Field(min_length=1, max_length=200)
     goal_amount: Optional[float] = Field(None, gt=0)
     notes: Optional[str] = Field(None, max_length=500)
+    
+    @validator('date', pre=True)
+    def parse_date(cls, v):
+        """Convertir string ISO a datetime si es necesario"""
+        if v is None:
+            return None
+        if isinstance(v, str):
+            from dateutil import parser
+            dt = parser.isoparse(v)
+            # Convertir a naive UTC (ODMantic requiere datetimes naive)
+            if dt.tzinfo is not None:
+                dt = dt.astimezone(None).replace(tzinfo=None)
+            return dt
+        # Si ya es datetime con timezone, convertir a naive
+        if hasattr(v, 'tzinfo') and v.tzinfo is not None:
+            return v.astimezone(None).replace(tzinfo=None)
+        return v
     
     @validator('amount', 'goal_amount')
     def validate_amounts(cls, v):
