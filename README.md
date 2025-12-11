@@ -4,30 +4,109 @@
 
 <div align="center">
   
-![Estado del Proyecto](https://img.shields.io/badge/Estado-En%20Desarrollo-yellow)
+![Estado del Proyecto](https://img.shields.io/badge/Estado-✅%20Funcional-green)
 ![Backend](https://img.shields.io/badge/Backend-✅%20Completado-green)
 ![Frontend](https://img.shields.io/badge/Frontend-✅%20Completado-green)
-![MCP](https://img.shields.io/badge/MCP-🚧%20Planificado-orange)
+![MCP](https://img.shields.io/badge/MCP-✅%20Completado-green)
 
 </div>
 
 ## 🎯 Descripción
 
-Una aplicación completa para el control de finanzas personales que permitirá a los usuarios gestionar sus gastos, ingresos y ahorros de manera eficiente. El proyecto está estructurado en tres componentes principales:
+Una aplicación completa para el control de finanzas personales que permite a los usuarios gestionar sus gastos, ingresos y ahorros de manera eficiente. El proyecto incluye tres componentes totalmente funcionales:
 
 - **Backend API** (✅ Completado) - FastAPI + MongoDB
 - **Frontend Web** (✅ Completado) - React + TypeScript + Tailwind CSS
-- **MCP (Model Context Protocol)** (🚧 Planificado)
+- **MCP Server** (✅ Completado) - Integración con Claude Desktop para interacción en lenguaje natural
 
 ## 🏗️ Arquitectura del Sistema
 
+### Diagrama de Componentes
+
 ```mermaid
 graph TB
-    A[Frontend React] --> B[Backend FastAPI]
-    B --> C[MongoDB]
-    D[MCP Server] --> B
-    B --> E[JWT Auth]
-    B --> F[REST API]
+    subgraph "Capa de Presentación"
+        A[👤 Usuario Web<br/>Navegador]
+        B[👤 Usuario IA<br/>Claude Desktop]
+    end
+    
+    subgraph "Capa de Aplicación"
+        C[🎨 Frontend React<br/>React 19 + TypeScript<br/>Tailwind CSS v4]
+        D[🤖 MCP Server<br/>FastMCP + Python<br/>Lenguaje Natural]
+    end
+    
+    subgraph "Capa de Backend"
+        E[⚡ Backend API<br/>FastAPI + Python<br/>REST Endpoints]
+        F[🔐 JWT Auth<br/>Seguridad]
+    end
+    
+    subgraph "Capa de Datos"
+        G[(🗄️ MongoDB<br/>Base de Datos)]
+    end
+    
+    A -->|HTTP/HTTPS| C
+    C -->|REST API<br/>JSON| E
+    B -->|MCP Protocol<br/>STDIO| D
+    D -->|HTTP/HTTPS<br/>REST API| E
+    E -->|Auth| F
+    F -->|Validate| E
+    E -->|ODMantic<br/>Queries| G
+    
+    style A fill:#e1f5ff
+    style B fill:#e1f5ff
+    style C fill:#fff3e0
+    style D fill:#f3e5f5
+    style E fill:#e8f5e9
+    style F fill:#ffebee
+    style G fill:#f1f8e9
+```
+
+### Flujo de Uso
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Usuario
+    participant F as 🎨 Frontend
+    participant C as 🤖 Claude Desktop
+    participant M as 🔧 MCP Server
+    participant B as ⚡ Backend API
+    participant D as 🗄️ MongoDB
+
+    Note over U,D: Flujo Tradicional (Frontend Web)
+    U->>F: 1. Abre la app web
+    F->>B: 2. Login (email/password)
+    B->>D: 3. Valida credenciales
+    D-->>B: 4. Usuario válido
+    B-->>F: 5. Token JWT
+    F->>U: 6. Dashboard financiero
+    U->>F: 7. "Registrar gasto de $200"
+    F->>B: 8. POST /expenses + Token
+    B->>D: 9. Guarda gasto
+    D-->>B: 10. Confirmación
+    B-->>F: 11. Gasto creado
+    F->>U: 12. ✅ Notificación
+
+    Note over U,D: Flujo con IA (Claude Desktop + MCP)
+    U->>C: 13. "Gasté $200 en gasolina"
+    C->>M: 14. Detecta intención (registrar_gasto)
+    M->>M: 15. Parsea lenguaje natural
+    M->>B: 16. POST /expenses + Token
+    B->>D: 17. Guarda gasto
+    D-->>B: 18. Confirmación
+    B-->>M: 19. Gasto creado
+    M-->>C: 20. Respuesta formateada
+    C->>U: 21. "✅ Gasto de $200 en Transporte"
+    
+    Note over U,D: Consulta Financiera con IA
+    U->>C: 22. "¿Cómo van mis finanzas?"
+    C->>M: 23. resumen_financiero()
+    M->>B: 24. GET /stats/summary + Token
+    B->>D: 25. Consulta estadísticas
+    D-->>B: 26. Datos agregados
+    B-->>M: 27. JSON con totales
+    M->>M: 28. Formatea respuesta
+    M-->>C: 29. Texto + emojis
+    C->>U: 30. "📊 Balance: $5,754.11..."
 ```
 
 ## 📁 Estructura del Proyecto
@@ -51,8 +130,13 @@ control-gastos-app/
 │   │   ├── types/        # Tipos TypeScript
 │   │   └── lib/          # Configuraciones (Axios)
 │   └── README.md         # Documentación del frontend
-├── mcp/                  # 🚧 Model Context Protocol
-│   └── README.md         # (Planificado)
+├── mcp/                  # ✅ Model Context Protocol
+│   ├── src/
+│   │   ├── server.py     # Servidor MCP con FastMCP
+│   │   ├── utils/        # Utilidades y helpers
+│   │   └── llm_prompts/  # Prompts para categorización
+│   ├── pyproject.toml    # Dependencias del MCP
+│   └── README.md         # Documentación MCP
 └── README.md             # Este archivo
 ```
 
@@ -87,7 +171,9 @@ control-gastos-app/
 - **Perfil de usuario** con edición de datos
 - **Filtros y búsquedas** avanzadas
 - **PWA features** para instalación como app
-- **MCP Server**: Protocolo para integración con herramientas de IA
+- **FastMCP** - Framework MCP para Python
+- **tzdata** - Manejo de zonas horarias
+- **python-dateutil** - Conversión de fechas
 
 ## 🛠️ Tecnologías
 
@@ -113,9 +199,13 @@ control-gastos-app/
 - **date-fns** - Manipulación de fechas
 - **Recharts** - Gráficos y visualizaciones (planificado)
 
-### MCP (Planificado)
-- **Model Context Protocol** - Integración con herramientas de IA
-- **Python** - Servidor MCP personalizado
+### MCP Server
+- **FastMCP** - Framework simplificado para servidores MCP
+- **httpx** - Cliente HTTP asíncrono para comunicación con backend
+- **pydantic** - Validación de datos
+- **python-dotenv** - Gestión de variables de entorno
+- **tzdata** - Soporte para zonas horarias
+- **Claude Desktop** - Cliente MCP oficial de Anthropic
 
 ## 🏃‍♂️ Inicio Rápido
 
@@ -171,11 +261,36 @@ npm run dev
 
 Frontend disponible en: `http://localhost:5173`
 
+### 4. Configurar el MCP Server (Opcional - para Claude Desktop)
+```bash
+cd mcp
+
+# Crear entorno virtual
+python -m venv .venv
+
+# Activar entorno virtual
+.venv\Scripts\activate  # Windows
+
+# Instalar dependencias
+pip install fastmcp httpx pydantic python-dotenv tzdata
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tu API_TOKEN del backend
+
+# Probar servidor
+cd src
+python server.py
+```
+
+**Para usar con Claude Desktop:**
+Ver documentación completa en [MCP README](./mcp/README.md)
+
 ## 📚 Documentación Detallada
 
-- [📖 Documentación del Backend](./backend/README.md)
-- [🎨 Documentación del Frontend](./frontend/README.md)
-- [🤖 Documentación del MCP](./mcp/README.md) *(Planificado)*
+- [📖 Documentación del Backend](./backend/README.md) - API REST con FastAPI
+- [🎨 Documentación del Frontend](./frontend/README.md) - App web con React
+- [🤖 Documentación del MCP Server](./mcp/README.md) - Integración con Claude Desktop
 
 ## 🧪 Probar la API
 
@@ -229,23 +344,29 @@ Authorization: Bearer <token>
 
 ### ✅ Fase 1 - Backend API (Completado)
 - [x] Arquitectura base con FastAPI
-- [x] Autenticación JWT
+- [x] Autenticación JWT completa
 - [x] CRUD completo de gastos, ingresos y ahorros
-- [x] Estadísticas y reportes
-- [x] Documentación completa
+- [x] Estadísticas y reportes mensuales
+- [x] Documentación automática (Swagger)
+- [x] Manejo de zonas horarias
 
-### 🚧 Fase 2 - Frontend Web (En desarrollo)
-- [ ] Interfaz de usuario moderna
-- [ ] Dashboard financiero
-- [ ] Gráficos y visualizaciones
-- [ ] Gestión de categorías
-- [ ] Exportación de datos
+### ✅ Fase 2 - Frontend Web (Completado)
+- [x] Interfaz de usuario moderna y responsive
+- [x] Dashboard financiero con resúmenes
+- [x] Sistema de autenticación (Login/Registro)
+- [x] Gestión completa de gastos, ingresos y ahorros
+- [x] Navegación mobile-first
+- [x] Componentes reutilizables con Tailwind CSS v4
+- [x] Estado global con Zustand
 
-### 🚧 Fase 3 - MCP Integration (Planificado)
-- [ ] Servidor MCP personalizado
-- [ ] Integración con herramientas de IA
-- [ ] Análisis automático de gastos
-- [ ] Recomendaciones inteligentes
+### ✅ Fase 3 - MCP Integration (Completado)
+- [x] Servidor MCP con FastMCP
+- [x] Integración con Claude Desktop
+- [x] 10 herramientas para gestión financiera
+- [x] Categorización automática inteligente
+- [x] Consultas en lenguaje natural
+- [x] Soporte de timezone (America/Mexico_City)
+- [x] Documentación completa con ejemplos
 
 ### 🚀 Fase 4 - Características Avanzadas
 - [ ] Aplicación móvil (React Native)
@@ -258,11 +379,11 @@ Authorization: Bearer <token>
 
 | Componente | Estado | Progreso | Última Actualización |
 |------------|--------|----------|---------------------|
-| Backend API | ✅ Completado | 100% | Octubre 2025 |
-| Frontend Web | 🚧 En desarrollo | 0% | - |
-| MCP Server | 🚧 Planificado | 0% | - |
-| Documentación | ✅ Completado | 90% | Octubre 2025 |
-| Testing | 🚧 En progreso | 30% | - |
+| Backend API | ✅ Completado | 100% | Noviembre 2025 |
+| Frontend Web | ✅ Completado | 100% | Diciembre 2025 |
+| MCP Server | ✅ Completado | 100% | Diciembre 2025 |
+| Documentación | ✅ Completado | 100% | Diciembre 2025 |
+| Testing | 🚧 En progreso | 40% | - |
 
 ## 🤝 Contribuir
 
@@ -275,11 +396,11 @@ Authorization: Bearer <token>
 5. Crear Pull Request
 
 ### Áreas donde necesitamos ayuda:
-- 🎨 Diseño UX/UI para el frontend
-- 📱 Desarrollo móvil
-- 🧪 Testing y QA
-- 📖 Documentación y tutoriales
-- 🌐 Internacionalización
+- 📊 Visualizaciones de datos (gráficos avanzados)
+- 📱 Desarrollo móvil (React Native)
+- 🧪 Testing y QA (pruebas unitarias y e2e)
+- 🌐 Internacionalización (i18n)
+- 🤖 Extensiones MCP (Telegram, WhatsApp, Slack)
 
 ## 📄 Licencia
 
